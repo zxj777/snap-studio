@@ -722,8 +722,8 @@ class y {
    * 执行导航
    */
   async executeNavigate(t, e) {
-    const { url: s, target: a = "_self", replace: i = !1 } = t, r = typeof s == "string" && s.includes("{{") ? await this.evaluateExpression(s, e) : s;
-    return i ? window.location.replace(r) : a === "_self" ? window.location.href = r : window.open(r, a), { url: r, target: a, replace: i };
+    const { to: s, newWindow: a } = t, i = a ? "_blank" : "_self", r = t.type === "replace", n = typeof s == "string" && s.includes("{{") ? await this.evaluateExpression(s, e) : s;
+    return r ? window.location.replace(n) : i === "_self" ? window.location.href = n : window.open(n, i), { url: n, target: i, replace: r };
   }
   /**
    * 执行消息显示

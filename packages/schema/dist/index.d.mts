@@ -47,26 +47,70 @@ interface TimeoutConfig {
 /**
  * 页面布局定义
  */
-interface Layout {
+interface LayoutDefinition {
     /** 根组件ID */
     root: string;
-    /** 全局插槽映射 */
-    slots?: Record<string, string>;
+    /** 页面结构定义 */
+    structure: Record<string, LayoutNode>;
+    /** 重复内容模板 */
+    templates?: Record<string, LayoutTemplate>;
     /** 布局模式 */
     mode?: 'fixed' | 'fluid' | 'responsive';
     /** 响应式断点 */
     breakpoints?: Record<string, number>;
 }
 /**
+ * 布局节点定义
+ */
+interface LayoutNode {
+    /** 子组件列表 */
+    children?: string[];
+    /** 插槽定义 */
+    slots?: Record<string, string | string[]>;
+    /** 动态重复内容 */
+    repeat?: LayoutRepeat;
+}
+/**
+ * 布局重复内容定义
+ */
+interface LayoutRepeat {
+    /** 模板ID */
+    template: string;
+    /** 数据源表达式 */
+    dataSource: string;
+    /** 列表项的唯一键 */
+    itemKey?: string;
+    /** 空状态组件 */
+    emptyComponent?: string;
+    /** 加载状态组件 */
+    loadingComponent?: string;
+}
+/**
+ * 布局模板定义
+ */
+interface LayoutTemplate {
+    /** 模板根结构 */
+    children?: string[];
+    /** 插槽定义 */
+    slots?: Record<string, string | string[]>;
+    /** 嵌套模板 */
+    templates?: Record<string, LayoutTemplate>;
+    /** 描述信息 */
+    description?: string;
+}
+type Layout = LayoutDefinition;
+/**
  * 组件定义
  */
 interface ComponentDefinition {
     /** 组件类型（对应UI组件库中的组件名） */
     componentType: string;
+    /** 组件属性 (用于向后兼容) */
+    props?: Record<string, any>;
     /** 组件属性 */
     properties?: Record<string, any>;
-    /** 子组件ID列表 */
-    children?: string[];
+    /** 子组件列表 */
+    children?: Array<ComponentDefinition | string>;
     /** 数据绑定 */
     dataBinding?: Record<string, string>;
     /** 事件绑定 */
@@ -77,8 +121,6 @@ interface ComponentDefinition {
     visibility?: string;
     /** 样式定义 */
     style?: ComponentStyle;
-    /** 插槽定义 */
-    slots?: Record<string, SlotDefinition>;
     /** 校验规则 */
     validations?: ValidationRule[];
     /** 组件唯一key */
@@ -87,6 +129,8 @@ interface ComponentDefinition {
     lazy?: boolean;
     /** 错误边界配置 */
     errorBoundary?: ErrorBoundaryConfig;
+    /** 组件描述 */
+    description?: string;
 }
 /**
  * 组件样式定义
@@ -171,11 +215,11 @@ interface DataSourceDefinition {
 /**
  * 数据源类型
  */
-type DataSourceType = 'API_REQUEST' | 'STATIC_DATA' | 'LOCAL_STORAGE' | 'SESSION_STORAGE' | 'WEBSOCKET' | 'SERVER_SENT_EVENT' | 'COMPUTED' | 'MOCK' | 'GRAPHQL';
+type DataSourceType = 'API_REQUEST' | 'STATIC_DATA' | 'LOCAL_STORAGE' | 'SESSION_STORAGE' | 'WEBSOCKET' | 'SERVER_SENT_EVENT' | 'COMPUTED' | 'MOCK';
 /**
  * 数据源配置
  */
-type DataSourceConfig = ApiRequestConfig | StaticDataConfig | StorageConfig | WebSocketConfig | ServerSentEventConfig | ComputedConfig | MockConfig | GraphQLConfig;
+type DataSourceConfig = ApiRequestConfig | StaticDataConfig | StorageConfig | WebSocketConfig | ServerSentEventConfig | ComputedConfig | MockConfig;
 /**
  * API请求配置
  */
@@ -277,21 +321,6 @@ interface MockConfig {
     simulateError?: boolean;
     /** 错误概率（0-1） */
     errorRate?: number;
-}
-/**
- * GraphQL配置
- */
-interface GraphQLConfig {
-    /** GraphQL端点 */
-    endpoint: string;
-    /** GraphQL查询 */
-    query: string;
-    /** 查询变量 */
-    variables?: Record<string, any>;
-    /** 请求头 */
-    headers?: Record<string, string>;
-    /** 认证配置 */
-    auth?: AuthConfig;
 }
 /**
  * 认证配置
@@ -956,7 +985,7 @@ interface PageSchema {
     /** 加载策略 */
     loadStrategy: LoadStrategy;
     /** 页面布局 */
-    layout: Layout;
+    layout: LayoutDefinition;
     /** 组件字典 */
     components: Record<string, ComponentDefinition>;
     /** 数据源中心 */
@@ -1012,7 +1041,7 @@ declare function createStaticDataSource(value: any): DataSourceDefinition;
 /**
  * 创建组件定义的辅助函数
  */
-declare function createComponent(componentType: string, properties?: Record<string, any>, children?: string[]): ComponentDefinition;
+declare function createComponent(componentType: string, props?: Record<string, any>): ComponentDefinition;
 /**
  * 创建更新状态动作的辅助函数
  */
@@ -1036,7 +1065,7 @@ declare function createMessageAction(message: string, type?: 'success' | 'error'
 /**
  * 创建表单组件的辅助函数
  */
-declare function createFormComponent(formItems: ComponentDefinition[], submitAction?: string): ComponentDefinition;
+declare function createFormComponent(submitAction?: string): ComponentDefinition;
 /**
  * 创建表格组件的辅助函数
  */
@@ -1166,4 +1195,4 @@ declare const COMMON_DATA_SOURCE_TYPES: {
     readonly MOCK: "MOCK";
 };
 
-export { type ActionConfig, type ActionDefinition, type ActionRetryConfig, type ActionType, type AnimationConfig, type ApiCallConfig, type ApiRequestConfig, type AuthConfig, COMMON_ACTION_TYPES, COMMON_COMPONENT_TYPES, COMMON_DATA_SOURCE_TYPES, type CacheStrategy, type ColorPalette, type ColorScale, type ComponentDefinition, type ComponentStyle, type CompositeConfig, type ComputedConfig, type ComputedDefinition, type ConditionalConfig, type CustomConfig, type DataSourceCache, type DataSourceConfig, type DataSourceDefinition, type DataSourceType, type DataTransformer, type DelayConfig, type ErrorBoundaryConfig, type ErrorDefinition, type EventConfig, type FetchDataConfig, type FontDefinition, type FormConfig, type GraphQLConfig, type I18nDefinition, type KeyframeDefinition, type Layout, type LifecycleDefinition, type LifecycleHook, type LoadStrategy, type LoopConfig, MIN_SUPPORTED_VERSION, type Metadata, type MockConfig, type ModalConfig, type NavigateConfig, type PageSchema, type PermissionCondition, type PermissionDefinition, type RetryConfig, SCHEMA_VERSION, type ServerSentEventConfig, type ShadowSystem, type ShowMessageConfig, type SlotDefinition, type SpacingSystem, type StaticDataConfig, type StorageConfig, type TemplateDefinition, type TemplateExample, type TemplateParam, type ThemeDefinition, type TimeoutConfig, type UpdateStateConfig, VERSION, type ValidationRule, type WebSocketConfig, createApiDataSource, createButtonComponent, createComponent, createCompositeAction, createEmptyPageSchema, createFetchDataAction, createFormComponent, createMessageAction, createNavigateAction, createStaticDataSource, createTableComponent, createUpdateStateAction, deepMerge, detectCircularReferences, extractComponentIds, generateId, getSchemaStats, isSchemaVersionCompatible, validateAction, validateComponent, validateDataSource, validatePageSchema };
+export { type ActionConfig, type ActionDefinition, type ActionRetryConfig, type ActionType, type AnimationConfig, type ApiCallConfig, type ApiRequestConfig, type AuthConfig, COMMON_ACTION_TYPES, COMMON_COMPONENT_TYPES, COMMON_DATA_SOURCE_TYPES, type CacheStrategy, type ColorPalette, type ColorScale, type ComponentDefinition, type ComponentStyle, type CompositeConfig, type ComputedConfig, type ComputedDefinition, type ConditionalConfig, type CustomConfig, type DataSourceCache, type DataSourceConfig, type DataSourceDefinition, type DataSourceType, type DataTransformer, type DelayConfig, type ErrorBoundaryConfig, type ErrorDefinition, type EventConfig, type FetchDataConfig, type FontDefinition, type FormConfig, type I18nDefinition, type KeyframeDefinition, type Layout, type LayoutDefinition, type LayoutNode, type LayoutRepeat, type LayoutTemplate, type LifecycleDefinition, type LifecycleHook, type LoadStrategy, type LoopConfig, MIN_SUPPORTED_VERSION, type Metadata, type MockConfig, type ModalConfig, type NavigateConfig, type PageSchema, type PermissionCondition, type PermissionDefinition, type RetryConfig, SCHEMA_VERSION, type ServerSentEventConfig, type ShadowSystem, type ShowMessageConfig, type SlotDefinition, type SpacingSystem, type StaticDataConfig, type StorageConfig, type TemplateDefinition, type TemplateExample, type TemplateParam, type ThemeDefinition, type TimeoutConfig, type UpdateStateConfig, VERSION, type ValidationRule, type WebSocketConfig, createApiDataSource, createButtonComponent, createComponent, createCompositeAction, createEmptyPageSchema, createFetchDataAction, createFormComponent, createMessageAction, createNavigateAction, createStaticDataSource, createTableComponent, createUpdateStateAction, deepMerge, detectCircularReferences, extractComponentIds, generateId, getSchemaStats, isSchemaVersionCompatible, validateAction, validateComponent, validateDataSource, validatePageSchema };

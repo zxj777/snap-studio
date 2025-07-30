@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useRenderEngine } from '@snap-studio/react';
 import { ComponentRenderer } from '@snap-studio/react';
 import type { PageSchema } from '@snap-studio/schema';
-import { setupActionHandlers } from '../schemas/action-handlers';
+// import { setupActionHandlers } from '../schemas/action-handlers';
 
 /**
  * 增强版页面容器
@@ -37,27 +37,26 @@ export const EnhancedPageContainer: React.FC<EnhancedPageContainerProps> = ({
 
   const [actionHandlersSetup, setActionHandlersSetup] = useState(false);
 
-  // 设置自定义 action handlers
-  useEffect(() => {
-    console.log('🔧 Action handlers setup check:', { engine: !!engine, actionHandlersSetup });
-    if (engine && !actionHandlersSetup) {
-      console.log('🔧 Setting up action handlers...');
-      setupActionHandlers(engine.actionExecutor);
-      setActionHandlersSetup(true);
-      console.log('✅ Action handlers setup complete');
-    }
-  }, [engine, actionHandlersSetup]);
+  // 注意：暂时移除自定义action处理器，因为我们现在使用内置的FETCH_DATA、MOCK等类型
+  // useEffect(() => {
+  //   console.log('🔧 Action handlers setup check:', { engine: !!engine, actionHandlersSetup });
+  //   if (engine && !actionHandlersSetup) {
+  //     console.log('🔧 Setting up action handlers...');
+  //     setupActionHandlers(engine.actionExecutor);
+  //     setActionHandlersSetup(true);
+  //     console.log('✅ Action handlers setup complete');
+  //   }
+  // }, [engine, actionHandlersSetup]);
 
   // 页面初始化
   useEffect(() => {
     console.log('🚀 Page initialization check:', { 
       engine: !!engine, 
-      actionHandlersSetup, 
+      // actionHandlersSetup, 
       isInitialized, 
       isInitializing 
     });
-    debugger
-    if (engine && actionHandlersSetup) {
+    if (engine) {
       console.log('🚀 Starting page initialization...');
       initializePage(schema).then((result) => {
         console.log('🚀 Page initialization result:', result);
@@ -113,8 +112,15 @@ export const EnhancedPageContainer: React.FC<EnhancedPageContainerProps> = ({
     );
   }
 
-  // 渲染页面内容
-  const rootComponentDefinition = schema.components[schema.layout.root];
+  // 渲染页面内容 - 合并layout.structure中的children信息
+  const baseRootDefinition = schema.components[schema.layout.root];
+  const layoutNode = schema.layout.structure?.[schema.layout.root];
+  
+  const rootComponentDefinition = baseRootDefinition ? {
+    ...baseRootDefinition,
+    ...(layoutNode?.children ? { children: layoutNode.children } : {})
+  } : null;
+  
   if (!rootComponentDefinition) {
     return (
       <div style={{ 

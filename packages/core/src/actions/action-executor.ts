@@ -155,9 +155,9 @@ export class ActionExecutor {
       
       const result = await this.performAction(action, context);
       
-      // 执行成功回调
-      if (action.onSuccess) {
-        await this.execute(action.onSuccess, { ...context, payload: result });
+              // 执行成功回调
+        if ((action as any).onSuccess) {
+          await this.execute((action as any).onSuccess, { ...context, payload: result });
       }
       
       return {
@@ -252,7 +252,7 @@ export class ActionExecutor {
     config: UpdateStateConfig, 
     context: ActionExecutionContext
   ): Promise<any> {
-    const { path, value, operation = 'SET' } = config;
+    const { path, value, operation = 'SET' } = config as any;
     
     // 计算最终值
     const finalValue = typeof value === 'string' && value.startsWith('{{')
@@ -261,19 +261,19 @@ export class ActionExecutor {
     
     switch (operation) {
       case 'SET':
-        this.stateManager.set(path, finalValue);
+        this.stateManager.set(path!, finalValue);
         break;
       case 'MERGE':
-        this.stateManager.merge(path, finalValue);
+        this.stateManager.merge(path!, finalValue);
         break;
       case 'DELETE':
-        this.stateManager.delete(path);
+        this.stateManager.delete(path!);
         break;
       case 'ARRAY_PUSH':
-        this.stateManager.arrayPush(path, finalValue);
+        this.stateManager.arrayPush(path!, finalValue);
         break;
       case 'ARRAY_REMOVE':
-        this.stateManager.arrayRemove(path, finalValue);
+        this.stateManager.arrayRemove(path!, finalValue);
         break;
     }
     
@@ -305,7 +305,9 @@ export class ActionExecutor {
     config: NavigateConfig, 
     context: ActionExecutionContext
   ): Promise<any> {
-    const { url, target = '_self', replace = false } = config;
+    const { to: url, newWindow } = config;
+    const target = newWindow ? '_blank' : '_self';
+    const replace = config.type === 'replace';
     
     const finalUrl = typeof url === 'string' && url.includes('{{')
       ? await this.evaluateExpression(url, context)

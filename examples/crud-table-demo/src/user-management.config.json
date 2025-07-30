@@ -1,0 +1,462 @@
+{
+  "metadata": {
+    "pageId": "user_management_page",
+    "name": "用户管理",
+    "version": "1.0.0",
+    "description": "用户管理系统 - 支持增删改查功能",
+    "seo": {
+      "title": "用户管理系统",
+      "description": "基于 Snap Studio 低代码平台构建的用户管理系统"
+    }
+  },
+  "loadStrategy": {
+    "initial": ["ds_user_list"],
+    "preload": [],
+    "onDemand": {
+      "act_create_user": ["ds_departments", "ds_positions"],
+      "act_edit_user": ["ds_departments", "ds_positions"]
+    }
+  },
+  "layout": {
+    "root": "comp_page_container",
+    "structure": {
+      "comp_page_container": {
+        "children": [
+          "comp_search_form",
+          "comp_user_table"
+        ]
+      }
+    }
+  },
+  "components": {
+    "comp_page_container": {
+      "componentType": "Container",
+      "properties": {
+        "style": {
+          "padding": "24px",
+          "minHeight": "100vh"
+        }
+      }
+    },
+    "comp_search_form": {
+      "componentType": "Form",
+      "properties": {
+        "layout": "inline",
+        "style": {
+          "marginBottom": "16px",
+          "padding": "16px",
+          "background": "#fafafa",
+          "borderRadius": "6px"
+        },
+        "fields": [
+          {
+            "name": "name",
+            "label": "用户名/邮箱1",
+            "type": "input",
+            "placeholder": "请输入用户名或邮箱",
+            "style": { "width": "200px" }
+          },
+          {
+            "name": "department",
+            "label": "部门",
+            "type": "select",
+            "placeholder": "请选择部门",
+            "style": { "width": "150px" },
+            "options": [
+              { "label": "技术部", "value": "tech" },
+              { "label": "产品部", "value": "product" },
+              { "label": "设计部", "value": "design" },
+              { "label": "运营部", "value": "operation" },
+              { "label": "市场部", "value": "marketing" },
+              { "label": "人事部", "value": "hr" }
+            ]
+          },
+          {
+            "name": "status",
+            "label": "状态",
+            "type": "select",
+            "placeholder": "请选择状态",
+            "style": { "width": "120px" },
+            "options": [
+              { "label": "在职", "value": "active" },
+              { "label": "离职", "value": "inactive" }
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "text": "搜索",
+            "type": "primary",
+            "actionId": "act_search_users"
+          },
+          {
+            "text": "重置",
+            "actionId": "act_reset_search"
+          }
+        ]
+      }
+    },
+    "comp_user_table": {
+      "componentType": "Table",
+      "properties": {
+        "rowKey": "id",
+        "bordered": true,
+        "size": "middle",
+        "editable": true,
+        "editMode": "inline",
+        "columns": [
+          {
+            "title": "用户ID1",
+            "dataIndex": "id",
+            "key": "id",
+            "width": 120,
+            "sorter": true
+          },
+          {
+            "title": "姓名",
+            "dataIndex": "name",
+            "key": "name",
+            "width": 120,
+            "editable": true,
+            "editType": "input",
+            "rules": [
+              { "required": true, "message": "姓名不能为空" },
+              { "min": 2, "max": 20, "message": "姓名长度在2-20个字符之间" }
+            ]
+          },
+          {
+            "title": "邮箱",
+            "dataIndex": "email",
+            "key": "email",
+            "width": 200,
+            "editable": true,
+            "editType": "input",
+            "rules": [
+              { "required": true, "message": "邮箱不能为空" }
+            ]
+          },
+          {
+            "title": "手机号",
+            "dataIndex": "phone",
+            "key": "phone",
+            "width": 130,
+            "editable": true,
+            "editType": "input",
+            "rules": [
+              { "required": true, "message": "手机号不能为空" }
+            ]
+          },
+          {
+            "title": "部门",
+            "dataIndex": "department",
+            "key": "department",
+            "width": 120,
+            "editable": true,
+            "editType": "select",
+            "editOptions": [
+              { "label": "技术部", "value": "tech" },
+              { "label": "产品部", "value": "product" },
+              { "label": "设计部", "value": "design" },
+              { "label": "运营部", "value": "operation" },
+              { "label": "市场部", "value": "marketing" },
+              { "label": "人事部", "value": "hr" }
+            ],
+            "filters": [
+              { "text": "技术部", "value": "tech" },
+              { "text": "产品部", "value": "product" },
+              { "text": "设计部", "value": "design" },
+              { "text": "运营部", "value": "operation" },
+              { "text": "市场部", "value": "marketing" },
+              { "text": "人事部", "value": "hr" }
+            ],
+            "render": "departments.find(d => d.value === value)?.label || value"
+          },
+          {
+            "title": "职位",
+            "dataIndex": "position",
+            "key": "position",
+            "width": 140,
+            "editable": true,
+            "editType": "select",
+            "editOptions": [
+              { "label": "前端工程师", "value": "frontend" },
+              { "label": "后端工程师", "value": "backend" },
+              { "label": "全栈工程师", "value": "fullstack" },
+              { "label": "产品经理", "value": "pm" },
+              { "label": "UI设计师", "value": "ui" },
+              { "label": "UX设计师", "value": "ux" },
+              { "label": "运营专员", "value": "operation" },
+              { "label": "市场专员", "value": "marketing" },
+              { "label": "HR专员", "value": "hr" }
+            ],
+            "render": "positions.find(p => p.value === value)?.label || value"
+          },
+          {
+            "title": "状态",
+            "dataIndex": "status",
+            "key": "status",
+            "width": 100,
+            "editable": true,
+            "editType": "select",
+            "editOptions": [
+              { "label": "在职", "value": "active" },
+              { "label": "离职", "value": "inactive" }
+            ],
+            "filters": [
+              { "text": "在职", "value": "active" },
+              { "text": "离职", "value": "inactive" }
+            ],
+            "render": "value === 'active' ? '在职' : '离职'"
+          },
+          {
+            "title": "创建时间",
+            "dataIndex": "createTime",
+            "key": "createTime",
+            "width": 180,
+            "sorter": true,
+            "render": "new Date(value).toLocaleString('zh-CN')"
+          }
+        ],
+        "rowActions": [
+          {
+            "type": "update",
+            "text": "编辑",
+            "actionId": "act_edit_user"
+          },
+          {
+            "type": "delete",
+            "text": "删除",
+            "actionId": "act_delete_user",
+            "confirm": {
+              "title": "确认删除",
+              "content": "删除后无法恢复，确定要删除这个用户吗？"
+            }
+          }
+        ],
+        "toolbarActions": [
+          {
+            "type": "create",
+            "text": "新增用户",
+            "actionId": "act_create_user"
+          }
+        ],
+
+        "pagination": {
+          "current": 1,
+          "pageSize": 10,
+          "total": 0,
+          "showSizeChanger": true,
+          "showQuickJumper": true,
+          "showTotal": true,
+          "pageSizeOptions": ["10", "20", "50", "100"]
+        },
+        "rowSelection": {
+          "type": "checkbox",
+          "onChangeActionId": "act_row_selection_change"
+        }
+      },
+      "dataBinding": {
+        "dataSource": "state.userList",
+        "loading": "state.loading",
+        "pagination": "state.pagination"
+      }
+    }
+  },
+  "dataSource": {
+    "ds_user_list": {
+      "type": "MOCK",
+      "config": {
+        "data": [
+          {
+            "id": "user_1",
+            "name": "张三",
+            "email": "zhangsan@company.com",
+            "phone": "13812345678",
+            "department": "tech",
+            "position": "frontend",
+            "status": "active",
+            "createTime": "2024-01-15T09:30:00.000Z"
+          },
+          {
+            "id": "user_2", 
+            "name": "李四",
+            "email": "lisi@company.com",
+            "phone": "13987654321",
+            "department": "product",
+            "position": "pm",
+            "status": "active",
+            "createTime": "2024-01-16T10:15:00.000Z"
+          },
+          {
+            "id": "user_3",
+            "name": "王五",
+            "email": "wangwu@company.com", 
+            "phone": "13765432109",
+            "department": "design",
+            "position": "ui",
+            "status": "inactive",
+            "createTime": "2024-01-17T11:00:00.000Z"
+          }
+        ],
+        "delay": 500,
+        "simulateError": false
+      }
+    },
+    "ds_departments": {
+      "type": "STATIC_DATA",
+      "config": {
+        "value": [
+          { "label": "技术部", "value": "tech" },
+          { "label": "产品部", "value": "product" },
+          { "label": "设计部", "value": "design" },
+          { "label": "运营部", "value": "operation" },
+          { "label": "市场部", "value": "marketing" },
+          { "label": "人事部", "value": "hr" }
+        ]
+      }
+    },
+    "ds_positions": {
+      "type": "STATIC_DATA",
+      "config": {
+        "value": [
+          { "label": "前端工程师", "value": "frontend" },
+          { "label": "后端工程师", "value": "backend" },
+          { "label": "全栈工程师", "value": "fullstack" },
+          { "label": "产品经理", "value": "pm" },
+          { "label": "UI设计师", "value": "ui" },
+          { "label": "UX设计师", "value": "ux" },
+          { "label": "运营专员", "value": "operation" },
+          { "label": "市场专员", "value": "marketing" },
+          { "label": "HR专员", "value": "hr" }
+        ]
+      }
+    }
+  },
+  "actions": {
+    "act_load_users": {
+      "type": "COMPOSITE",
+      "config": {
+        "steps": [
+          "act_set_loading_true",
+          "act_fetch_users",
+          "act_set_loading_false"
+        ]
+      }
+    },
+    "act_set_loading_true": {
+      "type": "UPDATE_STATE",
+      "config": {
+        "path": "loading",
+        "value": true
+      }
+    },
+    "act_set_loading_false": {
+      "type": "UPDATE_STATE",
+      "config": {
+        "path": "loading",
+        "value": false
+      }
+    },
+    "act_fetch_users": {
+      "type": "FETCH_DATA",
+      "config": {
+        "dataSourceId": "ds_user_list",
+        "resultPath": "userList",
+        "showLoading": true,
+        "loadingPath": "loading"
+      }
+    },
+    "act_create_user": {
+      "type": "CUSTOM",
+      "config": {
+        "handler": "act_create_user"
+      }
+    },
+    "act_edit_user": {
+      "type": "CUSTOM",
+      "config": {
+        "handler": "act_update_user"
+      }
+    },
+    "act_update_user": {
+      "type": "CUSTOM",
+      "config": {
+        "handler": "act_update_user"
+      }
+    },
+    "act_delete_user": {
+      "type": "CUSTOM",
+      "config": {
+        "handler": "act_delete_user"
+      }
+    },
+    "act_batch_delete_users": {
+      "type": "CUSTOM",
+      "config": {
+        "handler": "act_batch_delete_users"
+      }
+    },
+    "act_search_users": {
+      "type": "COMPOSITE",
+      "config": {
+        "steps": [
+          "act_update_search_params",
+          "act_reset_pagination",
+          "act_fetch_users"
+        ]
+      }
+    },
+    "act_update_search_params": {
+      "type": "UPDATE_STATE",
+      "config": {
+        "path": "searchParams",
+        "value": "{{payload}}"
+      }
+    },
+    "act_reset_search": {
+      "type": "COMPOSITE",
+      "config": {
+        "steps": [
+          "act_clear_search_params",
+          "act_reset_pagination",
+          "act_fetch_users"
+        ]
+      }
+    },
+    "act_clear_search_params": {
+      "type": "UPDATE_STATE",
+      "config": {
+        "path": "searchParams",
+        "value": {}
+      }
+    },
+    "act_reset_pagination": {
+      "type": "UPDATE_STATE",
+      "config": {
+        "path": "pagination",
+        "value": { "current": 1, "pageSize": 10 }
+      }
+    },
+    "act_row_selection_change": {
+      "type": "UPDATE_STATE",
+      "config": {
+        "path": "selectedRowKeys",
+        "value": "{{payload}}"
+      }
+    }
+  },
+  "initialState": {
+    "userList": [],
+    "loading": false,
+    "pagination": {
+      "current": 1,
+      "pageSize": 10,
+      "total": 0
+    },
+    "searchParams": {},
+    "selectedRowKeys": []
+  },
+  "lifecycle": {
+    "onLoad": ["act_load_users"]
+  }
+}

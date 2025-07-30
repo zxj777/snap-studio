@@ -1,0 +1,69 @@
+{
+  "metadata": {
+    "pageId": "simple_user_page", 
+    "name": "简单用户管理",
+    "version": "1.0.0"
+  },
+  "loadStrategy": {
+    "initial": [],
+    "preload": [],
+    "onDemand": {}
+  },
+  "layout": {
+    "root": "comp_container",
+    "structure": {
+      "comp_container": {
+        "children": ["comp_title", "comp_user_table"]
+      }
+    }
+  },
+  "components": {
+    "comp_container": {
+      "componentType": "Container", 
+      "properties": {
+        "style": {
+          "padding": "20px"
+        }
+      }
+    },
+    "comp_title": {
+      "componentType": "Text",
+      "properties": {
+        "content": "用户管理系统",
+        "style": {
+          "fontSize": "24px",
+          "marginBottom": "20px"
+        }
+      }
+    },
+    "comp_user_table": {
+      "componentType": "Table",
+      "properties": {
+        "columns": [
+          {
+            "title": "姓名",
+            "dataIndex": "name",
+            "key": "name"
+          },
+          {
+            "title": "邮箱", 
+            "dataIndex": "email",
+            "key": "email"
+          }
+        ]
+      },
+      "dataBinding": {
+        "dataSource": "state.users"
+      }
+    }
+  },
+  "dataSource": {},
+  "actions": {},
+  "initialState": {
+    "users": [
+      {"name": "张三", "email": "zhangsan@test.com"},
+      {"name": "李四", "email": "lisi@test.com"}
+    ]
+  },
+  "lifecycle": {}
+}

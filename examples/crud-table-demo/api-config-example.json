@@ -1,0 +1,58 @@
+{
+  "dataSource": {
+    "ds_user_list": {
+      "type": "API_REQUEST",
+      "config": {
+        "url": "/api/users",
+        "method": "GET",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer {{token}}"
+        },
+        "timeout": 10000
+      },
+      "cache": {
+        "enabled": true,
+        "ttl": 300000,
+        "strategy": "memory"
+      },
+      "retry": {
+        "maxAttempts": 3,
+        "delay": 1000,
+        "strategy": "exponential"
+      },
+      "transformer": {
+        "expression": "data.users",
+        "type": "map"
+      }
+    }
+  },
+  "actions": {
+    "act_create_user": {
+      "type": "CALL_API",
+      "config": {
+        "endpoint": "/api/users",
+        "method": "POST",
+        "body": "{{payload}}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    "act_update_user": {
+      "type": "CALL_API", 
+      "config": {
+        "endpoint": "/api/users/{{payload.id}}",
+        "method": "PUT",
+        "body": "{{payload}}"
+      }
+    },
+    "act_delete_user": {
+      "type": "CALL_API",
+      "config": {
+        "endpoint": "/api/users/{{payload.id}}",
+        "method": "DELETE"
+      }
+    }
+  }
+}

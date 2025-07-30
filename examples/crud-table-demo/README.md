@@ -1,6 +1,15 @@
 # Snap Studio CRUD Table Demo
 
-这是一个基于 Snap Studio 低代码渲染引擎构建的完整用户管理系统示例，展示了表格的增删改查功能。
+这是一个基于 Snap Studio 低代码渲染引擎构建的完整用户管理系统示例，展示了如何通过**单一 JSON 配置文件**实现表格的增删改查功能。
+
+## ✨ 重构亮点
+
+🎯 **极简架构** - 删除了所有多余的组件文件，只保留核心的用户管理功能  
+📄 **单文件配置** - 整个应用由 `user-management.config.json` 一个文件驱动  
+🚀 **零代码开发** - 表格列、搜索字段、按钮等都通过 JSON 配置，无需编写组件代码  
+🔧 **高度可配置** - 所有UI元素都可以通过修改配置文件轻松调整  
+⚡ **内置数据源** - 使用引擎内置的 `MOCK`、`API_REQUEST` 等数据源类型  
+🎛️ **内置Actions** - 使用 `FETCH_DATA`、`CALL_API` 等通用action，无需自定义
 
 ## 🎯 功能特性
 
@@ -19,8 +28,9 @@
 - **搜索功能** - 支持多字段组合搜索
 
 ### ✅ 低代码特性
-- **JSON Schema 驱动** - 页面完全由 JSON 配置生成
-- **组件化架构** - 基于 Ant Design v4 组件封装
+- **单一配置文件** - 整个页面由一个 JSON 文件驱动
+- **完全可配置** - 表格列、搜索字段、按钮都可通过配置修改
+- **零代码组件** - 无需编写 React 组件代码
 - **响应式状态管理** - 自动同步数据状态
 - **智能加载策略** - 支持按需加载和预加载
 - **事件驱动** - 声明式事件处理和动作执行
@@ -29,21 +39,26 @@
 
 ```
 📦 examples/crud-table-demo/
-├── 📄 package.json                    # 项目配置
-├── 📄 vite.config.ts                 # Vite 构建配置
-├── 📄 tsconfig.json                  # TypeScript 配置
-├── 📄 index.html                     # HTML 入口
+├── 📄 package.json                          # 项目配置
+├── 📄 vite.config.ts                       # Vite 构建配置
+├── 📄 tsconfig.json                        # TypeScript 配置
+├── 📄 index.html                           # HTML 入口
 └── 📁 src/
-    ├── 📄 main.tsx                   # 应用入口
-    ├── 📄 App.tsx                    # 主应用组件
-    ├── 📄 component-registry.ts      # 组件注册表
-    ├── 📄 mock-data.ts              # 模拟数据和API
+    ├── 📄 main.tsx                         # 应用入口
+    ├── 📄 App.tsx                          # 主应用组件 (简化版)
+    ├── 📄 user-management.config.json      # 🎯 核心配置文件
+    ├── 📄 component-registry.ts            # 组件注册表
+    ├── 📄 mock-data.ts                    # 模拟数据和API
     ├── 📁 components/
     │   └── 📄 enhanced-page-container.tsx  # 增强页面容器
     └── 📁 schemas/
-        ├── 📄 user-management.schema.ts    # 用户管理页面Schema
         └── 📄 action-handlers.ts           # 自定义行为处理器
 ```
+
+### 核心特点
+- **单文件配置**: `user-management.config.json` 是唯一的配置来源
+- **简化架构**: 删除了所有不必要的组件文件
+- **纯声明式**: 通过 JSON 配置实现所有功能，无需编写组件代码
 
 ## 🚀 快速开始
 
@@ -101,63 +116,148 @@ pnpm dev
 
 ## 🔧 核心配置解析
 
-### JSON Schema 结构
+### JSON 配置文件：`user-management.config.json`
 
-```typescript
-// 页面Schema示例
+这是整个应用的**唯一配置来源**，所有的页面功能都通过这个文件定义：
+
+```json
 {
-  metadata: {
-    pageId: 'user_management_page',
-    name: '用户管理',
-    version: '1.0.0'
+  "metadata": {
+    "pageId": "user_management_page",
+    "name": "用户管理",
+    "version": "1.0.0"
   },
   
-  // 加载策略
-  loadStrategy: {
-    initial: ['ds_user_list'],           // 初始加载
-    onDemand: {                          // 按需加载
-      'act_create_user': ['ds_departments', 'ds_positions']
-    }
-  },
-  
-  // 组件配置
-  components: {
-    'comp_user_table': {
-      componentType: 'Table',
-      properties: {
-        columns: [...],                  // 表格列配置
-        rowActions: [...],               // 行操作配置
-        toolbarActions: [...],           // 工具栏配置
-        search: {...},                   // 搜索配置
-        pagination: {...}                // 分页配置
-      },
-      dataBinding: {
-        dataSource: 'state.userList',   // 数据绑定
-        loading: 'state.loading'
+  "components": {
+    "comp_user_table": {
+      "componentType": "Table",
+      "properties": {
+        "columns": [
+          {
+            "title": "姓名",
+            "dataIndex": "name",
+            "editable": true,
+            "editType": "input",
+            "rules": [{"required": true, "message": "姓名不能为空"}]
+          }
+        ],
+        "toolbarActions": [
+          {
+            "type": "create",
+            "text": "新增用户",
+            "actionId": "act_create_user"
+          }
+        ],
+        "search": {
+          "enabled": true,
+          "fields": [
+            {
+              "name": "name",
+              "label": "用户名/邮箱",
+              "type": "input",
+              "placeholder": "请输入用户名或邮箱"
+            }
+          ]
+        }
       }
     }
   },
   
-  // 数据源
-  dataSource: {
-    'ds_user_list': {...}              // 用户数据源
+  "dataSource": {
+    "ds_user_list": {"type": "static", "config": {"value": []}}
   },
   
-  // 行为定义
-  actions: {
-    'act_create_user': {...},          // 创建用户行为
-    'act_update_user': {...},          // 更新用户行为
-    'act_delete_user': {...}           // 删除用户行为
+  "actions": {
+    "act_create_user": {"type": "CUSTOM", "config": {"handler": "act_create_user"}}
   },
   
-  // 初始状态
-  initialState: {
-    userList: [],
-    loading: false,
-    pagination: {...}
+  "initialState": {
+    "userList": [],
+    "loading": false
   }
 }
 ```
+
+### 配置说明
+- **表格列**: `components.comp_user_table.properties.columns` - 定义所有表格列
+- **搜索字段**: `components.comp_user_table.properties.search.fields` - 定义搜索表单
+- **操作按钮**: `components.comp_user_table.properties.toolbarActions` - 定义工具栏按钮
+- **行操作**: `components.comp_user_table.properties.rowActions` - 定义行级操作
+
+### 数据源类型
+现在使用的是内置的数据源类型，无需自定义：
+
+```json
+{
+  "dataSource": {
+    "ds_user_list": {
+      "type": "MOCK",              // 模拟数据，支持延迟和错误率
+      "config": {
+        "data": [...],             // 模拟数据
+        "delay": 500,              // 模拟网络延迟500ms
+        "simulateError": false     // 是否模拟错误
+      }
+    }
+  }
+}
+```
+
+也支持真正的API调用（参见 `api-config-example.json`）：
+```json
+{
+  "dataSource": {
+    "ds_user_list": {
+      "type": "API_REQUEST",       // 真实API调用
+      "config": {
+        "url": "/api/users",
+        "method": "GET",
+        "headers": {...},
+        "timeout": 10000
+      },
+      "cache": {...},              // 缓存配置
+      "retry": {...}               // 重试配置
+    }
+  }
+}
+```
+
+### Action类型
+支持多种内置action类型：
+
+```json
+{
+  "actions": {
+    "act_fetch_users": {
+      "type": "FETCH_DATA",        // 内置的数据获取action
+      "config": {
+        "dataSourceId": "ds_user_list",
+        "resultPath": "userList",  // 结果存储路径
+        "showLoading": true,       // 显示加载状态
+        "loadingPath": "loading"   // 加载状态路径
+      }
+    },
+    "act_show_message": {
+      "type": "SHOW_MESSAGE",      // 内置的消息显示action
+      "config": {
+        "type": "success",
+        "message": "操作成功！",
+        "duration": 3000
+      }
+    },
+    "act_call_api": {
+      "type": "CALL_API",          // 内置的API调用action
+      "config": {
+        "endpoint": "/api/users",
+        "method": "POST",
+        "body": "{{payload}}"
+      }
+    }
+  }
+}
+```
+
+### 完全内置版本
+参见 `pure-builtin-config.json` - 展示如何完全使用内置功能，无需任何自定义代码。
 
 ### 表格列配置
 
@@ -196,19 +296,19 @@ pnpm dev
 
 ### 添加新的表格列
 
-在 `user-management.schema.ts` 中的 `columns` 数组添加新列：
+在 `user-management.config.json` 中的 `columns` 数组添加新列：
 
-```typescript
+```json
 {
-  title: '年龄',
-  dataIndex: 'age',
-  key: 'age',
-  width: 80,
-  editable: true,
-  editType: 'number',
-  rules: [
-    { required: true, message: '年龄不能为空' },
-    { min: 18, max: 65, message: '年龄在18-65之间' }
+  "title": "年龄",
+  "dataIndex": "age",
+  "key": "age",
+  "width": 80,
+  "editable": true,
+  "editType": "number",
+  "rules": [
+    {"required": true, "message": "年龄不能为空"},
+    {"min": 18, "max": 65, "message": "年龄在18-65之间"}
   ]
 }
 ```
@@ -217,12 +317,12 @@ pnpm dev
 
 在 `search.fields` 数组中添加：
 
-```typescript
+```json
 {
-  name: 'age',
-  label: '年龄',
-  type: 'input',
-  placeholder: '请输入年龄'
+  "name": "age",
+  "label": "年龄",
+  "type": "input",
+  "placeholder": "请输入年龄"
 }
 ```
 
@@ -230,12 +330,31 @@ pnpm dev
 
 在 `rowActions` 或 `toolbarActions` 中添加：
 
-```typescript
+```json
 {
-  type: 'custom',
-  text: '导出',
-  actionId: 'act_export_user',
-  icon: '导出图标'
+  "type": "custom",
+  "text": "导出",
+  "actionId": "act_export_user"
+}
+```
+
+### 修改部门选项
+
+直接修改配置文件中的部门数据：
+
+```json
+{
+  "dataSource": {
+    "ds_departments": {
+      "type": "static",
+      "config": {
+        "value": [
+          {"label": "技术部", "value": "tech"},
+          {"label": "新部门", "value": "new_dept"}
+        ]
+      }
+    }
+  }
 }
 ```
 

@@ -1,0 +1,180 @@
+{
+  "metadata": {
+    "pageId": "user_management_pure",
+    "name": "用户管理（纯内置）",
+    "version": "1.0.0",
+    "description": "完全使用内置数据源和action的用户管理系统"
+  },
+  "loadStrategy": {
+    "initial": ["ds_user_list"],
+    "preload": [],
+    "onDemand": {}
+  },
+  "layout": {
+    "root": "comp_page_container",
+    "structure": {}
+  },
+  "components": {
+    "comp_page_container": {
+      "componentType": "Container",
+      "properties": {
+        "style": {
+          "padding": "24px",
+          "minHeight": "100vh"
+        }
+      },
+      "children": ["comp_user_table"]
+    },
+    "comp_user_table": {
+      "componentType": "Table",
+      "properties": {
+        "rowKey": "id",
+        "bordered": true,
+        "size": "middle",
+        "columns": [
+          {
+            "title": "用户ID",
+            "dataIndex": "id",
+            "key": "id",
+            "width": 120
+          },
+          {
+            "title": "姓名",
+            "dataIndex": "name",
+            "key": "name",
+            "width": 120
+          },
+          {
+            "title": "邮箱",
+            "dataIndex": "email",
+            "key": "email",
+            "width": 200
+          },
+          {
+            "title": "部门",
+            "dataIndex": "department",
+            "key": "department",
+            "width": 120,
+            "render": "departments.find(d => d.value === value)?.label || value"
+          },
+          {
+            "title": "状态",
+            "dataIndex": "status",
+            "key": "status",
+            "width": 100,
+            "render": "value === 'active' ? '在职' : '离职'"
+          }
+        ],
+        "toolbarActions": [
+          {
+            "type": "refresh",
+            "text": "刷新",
+            "actionId": "act_refresh_users"
+          }
+        ],
+        "pagination": {
+          "current": 1,
+          "pageSize": 10,
+          "total": 0,
+          "showSizeChanger": true,
+          "showQuickJumper": true,
+          "showTotal": true,
+          "pageSizeOptions": ["10", "20", "50", "100"]
+        }
+      },
+      "dataBinding": {
+        "dataSource": "state.userList",
+        "loading": "state.loading",
+        "pagination": "state.pagination"
+      }
+    }
+  },
+  "dataSource": {
+    "ds_user_list": {
+      "type": "STATIC_DATA",
+      "config": {
+        "value": [
+          {
+            "id": "user_1",
+            "name": "张三",
+            "email": "zhangsan@company.com",
+            "department": "tech",
+            "status": "active"
+          },
+          {
+            "id": "user_2", 
+            "name": "李四",
+            "email": "lisi@company.com",
+            "department": "product",
+            "status": "active"
+          },
+          {
+            "id": "user_3",
+            "name": "王五",
+            "email": "wangwu@company.com",
+            "department": "design",
+            "status": "inactive"
+          }
+        ]
+      }
+    },
+    "ds_departments": {
+      "type": "STATIC_DATA",
+      "config": {
+        "value": [
+          { "label": "技术部", "value": "tech" },
+          { "label": "产品部", "value": "product" },
+          { "label": "设计部", "value": "design" }
+        ]
+      }
+    }
+  },
+  "actions": {
+    "act_load_users": {
+      "type": "FETCH_DATA",
+      "config": {
+        "dataSourceId": "ds_user_list",
+        "resultPath": "userList",
+        "showLoading": true,
+        "loadingPath": "loading"
+      }
+    },
+    "act_refresh_users": {
+      "type": "FETCH_DATA",
+      "config": {
+        "dataSourceId": "ds_user_list",
+        "resultPath": "userList",
+        "showLoading": true,
+        "loadingPath": "loading"
+      }
+    },
+    "act_load_departments": {
+      "type": "FETCH_DATA",
+      "config": {
+        "dataSourceId": "ds_departments",
+        "resultPath": "departments"
+      }
+    },
+    "act_show_success": {
+      "type": "SHOW_MESSAGE",
+      "config": {
+        "type": "success",
+        "message": "操作成功！",
+        "duration": 3000
+      }
+    }
+  },
+  "initialState": {
+    "userList": [],
+    "departments": [],
+    "loading": false,
+    "pagination": {
+      "current": 1,
+      "pageSize": 10,
+      "total": 0
+    }
+  },
+  "lifecycle": {
+    "onLoad": ["act_load_users", "act_load_departments"]
+  }
+}

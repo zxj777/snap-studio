@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { Layout, Typography, Card } from 'antd';
+import { useState } from 'react';
+import { Layout, Typography } from 'antd';
 import { EnhancedPageContainer } from './components/enhanced-page-container';
 import { setupComponentRegistry } from './component-registry';
-import { userManagementSchema } from './schemas/user-management.schema';
-import { setupActionHandlers } from './schemas/action-handlers';
+import userManagementConfig from './user-management.config.json';
 
 const { Header, Content } = Layout;
 const { Title } = Typography;
 
 function App() {
-  const [componentsRegistered, setComponentsRegistered] = useState(() => {
+  const [componentsRegistered] = useState(() => {
     // 同步设置组件注册表
     console.log('开始注册组件...');
     setupComponentRegistry();
@@ -29,7 +28,7 @@ function App() {
           alignItems: 'center'
         }}>
           <Title level={3} style={{ margin: 0, color: '#1890ff' }}>
-            🚀 Snap Studio - 低代码渲染引擎演示
+            🚀 Snap Studio - 用户管理系统
           </Title>
         </Header>
         
@@ -52,36 +51,43 @@ function App() {
         alignItems: 'center'
       }}>
         <Title level={3} style={{ margin: 0, color: '#1890ff' }}>
-          🚀 Snap Studio - 低代码渲染引擎演示
+          🚀 Snap Studio - 用户管理系统
         </Title>
       </Header>
       
       <Content style={{ padding: '24px' }}>
-        <Card 
-          title="用户管理系统" 
-          style={{ width: '100%' }}
-          bodyStyle={{ padding: 0 }}
-        >
-          <EnhancedPageContainer
-            schema={userManagementSchema}
-            engineConfig={{
-              debug: true,
-              dataLoader: {
-                timeout: 10000,
-                enableCache: true
-              },
-              expressionEngine: {
-                debug: true
-              }
-            }}
-            onPageLoad={(schema) => {
-              console.log('✅ 页面加载完成:', schema.metadata.name);
-            }}
-            onPageError={(error) => {
-              console.error('❌ 页面加载失败:', error);
-            }}
-          />
-        </Card>
+        <div style={{ 
+          background: '#fff7e6', 
+          border: '1px solid #ffd591',
+          borderRadius: '6px',
+          padding: '12px',
+          marginBottom: '16px',
+          fontSize: '14px'
+        }}>
+          <strong>💡 低代码引擎驱动：</strong>
+          <ul style={{ marginBottom: 0, marginTop: 8 }}>
+            <li>通过单一 JSON 配置文件驱动整个页面</li>
+            <li>所有的表格列、搜索字段、按钮都可配置</li>
+            <li>支持完整的用户增删改查功能</li>
+            <li>配置文件：<code>user-management.config.json</code></li>
+          </ul>
+        </div>
+        <EnhancedPageContainer
+          schema={userManagementConfig as any}
+          engineConfig={{
+            debug: true,
+            dataLoader: {
+              timeout: 10000,
+              enableCache: true
+            }
+          }}
+          onPageLoad={(schema) => {
+            console.log('✅ 页面加载完成:', schema.metadata.name);
+          }}
+          onPageError={(error) => {
+            console.error('❌ 页面加载失败:', error);
+          }}
+        />
       </Content>
     </Layout>
   );

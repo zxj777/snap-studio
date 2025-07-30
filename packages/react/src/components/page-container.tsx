@@ -287,7 +287,20 @@ export function PageContainer({
     if (!schema || !isInitialized) return null;
     
     const rootComponentId = schema.layout.root;
-    return schema.components[rootComponentId];
+    const componentDef = schema.components[rootComponentId];
+    
+    if (!componentDef) return null;
+    
+    // 合并layout.structure中的children信息到组件定义中
+    const layoutNode = schema.layout.structure?.[rootComponentId];
+    if (layoutNode?.children) {
+      return {
+        ...componentDef,
+        children: layoutNode.children
+      };
+    }
+    
+    return componentDef;
   }, [schema, isInitialized]);
   
   // 重试函数

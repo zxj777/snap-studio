@@ -1,0 +1,11 @@
+
+> snap-studio-crud-demo@1.0.0 dev /Users/zhuxiaojiang/toys/snap-studio/examples/crud-table-demo
+> vite
+
+Port 3000 is in use, trying another one...
+
+  VITE v5.4.19  ready in 307 ms
+
+  ➜  Local:   http://localhost:3001/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help
