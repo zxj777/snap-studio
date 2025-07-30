@@ -1,0 +1,45 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "allowJs": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "incremental": true,
+    "composite": true,
+    "baseUrl": ".",
+    "paths": {
+      "@snap-studio/schema": ["./packages/schema/src"],
+      "@snap-studio/schema/*": ["./packages/schema/src/*"],
+      "@snap-studio/expression-engine": ["./packages/expression-engine/src"],
+      "@snap-studio/expression-engine/*": ["./packages/expression-engine/src/*"],
+      "@snap-studio/core": ["./packages/core/src"],
+      "@snap-studio/core/*": ["./packages/core/src/*"],
+      "@snap-studio/react": ["./packages/react/src"],
+      "@snap-studio/react/*": ["./packages/react/src/*"],
+      "@snap-studio/ui-components": ["./packages/ui-components/src"],
+      "@snap-studio/ui-components/*": ["./packages/ui-components/src/*"]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ]
+} 

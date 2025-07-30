@@ -1,0 +1,30 @@
+{
+  "name": "snap-studio-crud-demo",
+  "version": "1.0.0",
+  "description": "Complete CRUD table demo using snap-studio low-code platform",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@snap-studio/core": "workspace:*",
+    "@snap-studio/react": "workspace:*",
+    "@snap-studio/schema": "workspace:*",
+    "@snap-studio/ui-components": "workspace:*",
+    "@snap-studio/expression-engine": "workspace:*",
+    "antd": "^4.24.15",
+    "@ant-design/icons": "^4.8.1",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "dayjs": "^1.11.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0"
+  }
+}

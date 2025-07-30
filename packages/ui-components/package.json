@@ -1,0 +1,49 @@
+{
+  "name": "@snap-studio/ui-components",
+  "version": "1.0.0",
+  "description": "Ant Design based UI components library for snap-studio low-code platform",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "vite build && tsc --emitDeclarationOnly",
+    "dev": "vite build --watch",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage"
+  },
+  "dependencies": {
+    "@snap-studio/schema": "workspace:*",
+    "antd": "^4.24.15",
+    "@ant-design/icons": "^4.8.1",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "@types/lodash": "^4.17.7",
+    "@vitejs/plugin-react": "^4.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0",
+    "vitest": "^1.0.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "keywords": [
+    "react",
+    "ui-components",
+    "low-code",
+    "layout"
+  ],
+  "author": "Snap Studio Team",
+  "license": "MIT"
+}
