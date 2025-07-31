@@ -231,43 +231,40 @@
   },
   "dataSource": {
     "ds_user_list": {
-      "type": "MOCK",
+      "type": "API_REQUEST",
       "config": {
-        "data": [
-          {
-            "id": "user_1",
-            "name": "张三",
-            "email": "zhangsan@company.com",
-            "phone": "13812345678",
-            "department": "tech",
-            "position": "frontend",
-            "status": "active",
-            "createTime": "2024-01-15T09:30:00.000Z"
-          },
-          {
-            "id": "user_2", 
-            "name": "李四",
-            "email": "lisi@company.com",
-            "phone": "13987654321",
-            "department": "product",
-            "position": "pm",
-            "status": "active",
-            "createTime": "2024-01-16T10:15:00.000Z"
-          },
-          {
-            "id": "user_3",
-            "name": "王五",
-            "email": "wangwu@company.com", 
-            "phone": "13765432109",
-            "department": "design",
-            "position": "ui",
-            "status": "inactive",
-            "createTime": "2024-01-17T11:00:00.000Z"
-          }
-        ],
-        "delay": 500,
-        "simulateError": false
-      }
+        "url": "/api/users",
+        "method": "GET",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "params": {
+          "page": "{{state.pagination.current}}",
+          "pageSize": "{{state.pagination.pageSize}}",
+          "search": "{{state.searchKeyword}}",
+          "department": "{{state.searchParams.department}}",
+          "status": "{{state.searchParams.status}}"
+        }
+      },
+      "transformer": "data.data"
+    },
+    "ds_pagination_info": {
+      "type": "API_REQUEST",
+      "config": {
+        "url": "/api/users",
+        "method": "GET",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "params": {
+          "page": "{{state.pagination.current}}",
+          "pageSize": "{{state.pagination.pageSize}}",
+          "search": "{{state.searchKeyword}}",
+          "department": "{{state.searchParams.department}}",
+          "status": "{{state.searchParams.status}}"
+        }
+      },
+      "transformer": "{ current: data.page, pageSize: data.pageSize, total: data.total }"
     },
     "ds_departments": {
       "type": "STATIC_DATA",
@@ -325,12 +322,28 @@
       }
     },
     "act_fetch_users": {
+      "type": "COMPOSITE",
+      "config": {
+        "steps": [
+          "act_fetch_user_data",
+          "act_fetch_pagination_info"
+        ]
+      }
+    },
+    "act_fetch_user_data": {
       "type": "FETCH_DATA",
       "config": {
         "dataSourceId": "ds_user_list",
         "resultPath": "userList",
         "showLoading": true,
         "loadingPath": "loading"
+      }
+    },
+    "act_fetch_pagination_info": {
+      "type": "FETCH_DATA",
+      "config": {
+        "dataSourceId": "ds_pagination_info",
+        "resultPath": "pagination"
       }
     },
     "act_create_user": {
@@ -367,7 +380,6 @@
       "type": "COMPOSITE",
       "config": {
         "steps": [
-          "act_update_search_params",
           "act_reset_pagination",
           "act_fetch_users"
         ]
@@ -380,21 +392,12 @@
         "value": "{{payload}}"
       }
     },
-    "act_update_search_params": {
-      "type": "UPDATE_STATE",
-      "config": {
-        "path": "searchParams",
-        "value": {
-          "name": "{{state.searchKeyword}}"
-        }
-      }
-    },
+
     "act_reset_search": {
       "type": "COMPOSITE",
       "config": {
         "steps": [
           "act_clear_search_keyword",
-          "act_clear_search_params",
           "act_reset_pagination",
           "act_fetch_users"
         ]
@@ -407,13 +410,7 @@
         "value": ""
       }
     },
-    "act_clear_search_params": {
-      "type": "UPDATE_STATE",
-      "config": {
-        "path": "searchParams",
-        "value": {}
-      }
-    },
+
     "act_reset_pagination": {
       "type": "UPDATE_STATE",
       "config": {
@@ -437,7 +434,6 @@
       "pageSize": 10,
       "total": 0
     },
-    "searchParams": {},
     "selectedRowKeys": [],
     "searchKeyword": ""
   },

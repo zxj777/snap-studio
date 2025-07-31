@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useRenderEngine } from '@snap-studio/react';
 import { ComponentRenderer } from '@snap-studio/react';
 import type { PageSchema } from '@snap-studio/schema';
+import type { HttpClient } from '@snap-studio/communication';
 // import { setupActionHandlers } from '../schemas/action-handlers';
 
 /**
@@ -15,6 +16,7 @@ export interface EnhancedPageContainerProps {
     dataLoader?: {
       timeout?: number;
       enableCache?: boolean;
+      httpClient?: HttpClient;
     };
   };
   onPageLoad?: (schema: PageSchema) => void;

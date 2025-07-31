@@ -9,16 +9,19 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ant-design/icons": "^4.8.1",
+    "@snap-studio/communication": "workspace:*",
     "@snap-studio/core": "workspace:*",
+    "@snap-studio/expression-engine": "workspace:*",
     "@snap-studio/react": "workspace:*",
     "@snap-studio/schema": "workspace:*",
     "@snap-studio/ui-components": "workspace:*",
-    "@snap-studio/expression-engine": "workspace:*",
     "antd": "^4.24.15",
-    "@ant-design/icons": "^4.8.1",
+    "axios": "^1.6.0",
+    "axios-mock-adapter": "^2.1.0",
+    "dayjs": "^1.11.0",
     "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "dayjs": "^1.11.0"
+    "react-dom": "^18.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.0",

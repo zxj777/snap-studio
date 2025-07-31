@@ -7,6 +7,8 @@ import type {
 } from '@snap-studio/schema';
 import type { ExpressionEngine } from '@snap-studio/expression-engine';
 import type { StateManager } from '../state/state-manager.js';
+import type { HttpClient } from '@snap-studio/communication';
+import { FetchHttpClient } from '@snap-studio/communication';
 
 /**
  * 数据加载结果
@@ -40,6 +42,8 @@ export interface DataLoaderConfig {
   enableCache?: boolean;
   /** 缓存过期时间（毫秒） */
   cacheExpiry?: number;
+  /** HTTP 客户端 */
+  httpClient?: HttpClient;
 }
 
 /**
@@ -59,7 +63,8 @@ export class DataLoader {
   private dataSources = new Map<string, DataSourceDefinition>();
   private cache = new Map<string, CacheItem>();
   private loadingPromises = new Map<string, Promise<DataLoadResult>>();
-  private config: Required<DataLoaderConfig>;
+  private config: Required<Omit<DataLoaderConfig, 'httpClient'>> & { httpClient: HttpClient };
+  private httpClient: HttpClient;
   
   constructor(
     private stateManager: StateManager,
@@ -72,8 +77,12 @@ export class DataLoader {
       retryDelay: 1000,
       enableCache: true,
       cacheExpiry: 5 * 60 * 1000, // 5分钟
+      httpClient: new FetchHttpClient(),
       ...config
     };
+    
+    // 初始化HTTP客户端
+    this.httpClient = this.config.httpClient;
   }
   
   /**
@@ -142,19 +151,19 @@ export class DataLoader {
       return await existingPromise;
     }
     
-    // 检查缓存
-    if (this.config.enableCache) {
-      const cached = this.getCachedData(dataSourceId);
-      if (cached) {
-        return {
-          dataSourceId,
-          success: true,
-          data: cached.data,
-          fromCache: true,
-          duration: 0
-        };
-      }
-    }
+    // // 检查缓存
+    // if (this.config.enableCache) {
+    //   const cached = this.getCachedData(dataSourceId);
+    //   if (cached) {
+    //     return {
+    //       dataSourceId,
+    //       success: true,
+    //       data: cached.data,
+    //       fromCache: true,
+    //       duration: 0
+    //     };
+    //   }
+    // }
     
     const dataSource = this.dataSources.get(dataSourceId);
     if (!dataSource) {
@@ -213,7 +222,7 @@ export class DataLoader {
           break;
           
         case 'LOCAL_STORAGE':
-          data = this.loadFromStorage(dataSource.config.key);
+          data = this.loadFromStorage((dataSource.config as any).key);
           break;
           
         case 'COMPUTED':
@@ -221,7 +230,7 @@ export class DataLoader {
           break;
           
         case 'MOCK':
-          data = dataSource.config.data || this.generateMockData(dataSource.config);
+          data = (dataSource.config as any).data || this.generateMockData(dataSource.config);
           break;
           
         default:
@@ -257,35 +266,52 @@ export class DataLoader {
    */
   private async loadApiData(config: ApiRequestConfig): Promise<any> {
     const { url, method = 'GET', params, headers, body } = config;
-    
-    // 构建请求URL
-    let requestUrl = url;
+    // debugger
+    // 处理表达式求值
+    const evaluatedParams: Record<string, string> = {};
     if (params) {
-      const searchParams = new URLSearchParams(params);
-      requestUrl += (url.includes('?') ? '&' : '?') + searchParams.toString();
+      for (const [key, value] of Object.entries(params)) {
+        if (typeof value === 'string' && value.startsWith('{{') && value.endsWith('}}')) {
+          // 求值表达式
+          const expression = value.slice(2, -2); // 去掉 {{}}
+          const context = {
+            state: this.stateManager.get(),
+          };
+          try {
+            const result = await this.expressionEngine.evaluate(expression, context);
+            evaluatedParams[key] = result
+          } catch (error) {
+            console.warn(`参数表达式求值失败: ${expression}`, error);
+            evaluatedParams[key] = '';
+          }
+        } else {
+          evaluatedParams[key] = String(value);
+        }
+      }
     }
     
-    // 构建请求选项
-    const fetchOptions: RequestInit = {
+    console.log('🚀 API Request:', {
+      url,
       method,
-      headers: {
-        'Content-Type': 'application/json',
-        ...headers
-      },
-      signal: AbortSignal.timeout(this.config.timeout)
-    };
+      originalParams: params,
+      evaluatedParams,
+      headers,
+      body
+    });
     
-    if (body && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
-      fetchOptions.body = typeof body === 'string' ? body : JSON.stringify(body);
-    }
+    // 使用统一的HTTP客户端
+    const response = await this.httpClient.request({
+      url,
+      method,
+      params: evaluatedParams,
+      headers,
+      body,
+      timeout: this.config.timeout
+    });
     
-    const response = await fetch(requestUrl, fetchOptions);
+    console.log('✅ API Response:', response);
     
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-    
-    return await response.json();
+    return response.data;
   }
   
   /**

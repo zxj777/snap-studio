@@ -19,7 +19,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@snap-studio/schema': resolve(__dirname, '../schema/src'),
-      '@snap-studio/expression-engine': resolve(__dirname, '../expression-engine/src')
+      '@snap-studio/expression-engine': resolve(__dirname, '../expression-engine/src'),
+      '@snap-studio/communication': resolve(__dirname, '../communication/src')
     }
   }
 });

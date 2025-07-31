@@ -6,7 +6,6 @@ import 'antd/dist/antd.css';
 import App from './App';
 
 // 初始化模拟API服务器
-import './mock-api-server';
 
 // 配置 dayjs 中文语言包
 import dayjs from 'dayjs';

@@ -13,7 +13,8 @@
   },
   "dependencies": {
     "@snap-studio/schema": "workspace:*",
-    "@snap-studio/expression-engine": "workspace:*"
+    "@snap-studio/expression-engine": "workspace:*",
+    "@snap-studio/communication": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.0.0",

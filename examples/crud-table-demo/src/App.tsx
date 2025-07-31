@@ -3,6 +3,11 @@ import { Layout, Typography } from 'antd';
 import { EnhancedPageContainer } from './components/enhanced-page-container';
 import { setupComponentRegistry } from './component-registry';
 import userManagementConfig from './user-management.config.json';
+import axios from 'axios';
+import { AxiosHttpClient } from '@snap-studio/communication';
+import MockAdapter from 'axios-mock-adapter';
+// 🚀 导入mock数据存储
+import { mockDataStore } from './mock-data';
 
 const { Header, Content } = Layout;
 const { Title } = Typography;
@@ -15,6 +20,111 @@ function App() {
     console.log('组件注册完成');
     return true;
   });
+
+    // 创建 axios 实例和 HTTP 客户端
+  const axiosInstance = axios.create({
+    baseURL: window.location.origin, // 使用当前域名作为baseURL
+    timeout: 15000
+  });
+
+  // 🚀 配置Mock适配器
+  const mock = new MockAdapter(axiosInstance, { delayResponse: 300 });
+  
+  // 配置用户列表API
+  mock.onGet('/api/users').reply(async (config) => {
+    try {
+      console.log('🎯 Mock拦截GET /api/users:', config.params);
+      
+      const searchParams = {
+        name: config.params?.name || config.params?.search || undefined,
+        department: config.params?.department || undefined,  
+        status: config.params?.status || undefined,
+        page: parseInt(config.params?.page || '1'),
+        pageSize: parseInt(config.params?.pageSize || '10')
+      };
+      
+      console.log('📋 处理用户查询参数:', searchParams);
+      const result = await mockDataStore.getUsers(searchParams);
+      console.log('✅ Mock返回结果:', result);
+      
+      return [200, result];
+    } catch (error) {
+      console.error('❌ Mock处理错误:', error);
+      return [400, { error: (error as Error).message }];
+    }
+  });
+  
+  // 配置创建用户API
+  mock.onPost('/api/users').reply(async (config) => {
+    try {
+      console.log('🎯 Mock拦截POST /api/users:', config.data);
+      const userData = JSON.parse(config.data);
+      const result = await mockDataStore.createUser(userData);
+      console.log('✅ Mock创建用户成功:', result);
+      return [201, result];
+    } catch (error) {
+      console.error('❌ Mock创建用户失败:', error);
+      return [400, { error: (error as Error).message }];
+    }
+  });
+  
+  // 配置更新用户API
+  mock.onPut(/\/api\/users\/\w+/).reply(async (config) => {
+    try {
+      const url = config.url || '';
+      const id = url.split('/').pop()!;
+      const userData = JSON.parse(config.data);
+      console.log('🎯 Mock拦截PUT /api/users/' + id, userData);
+      
+      const result = await mockDataStore.updateUser(id, userData);
+      console.log('✅ Mock更新用户成功:', result);
+      return [200, result];
+    } catch (error) {
+      console.error('❌ Mock更新用户失败:', error);
+      return [400, { error: (error as Error).message }];
+    }
+  });
+  
+  // 配置删除用户API  
+  mock.onDelete(/\/api\/users\/\w+/).reply(async (config) => {
+    try {
+      const url = config.url || '';
+      const id = url.split('/').pop()!;
+      console.log('🎯 Mock拦截DELETE /api/users/' + id);
+      
+      await mockDataStore.deleteUser(id);
+      console.log('✅ Mock删除用户成功');
+      return [200, { success: true }];
+    } catch (error) {
+      console.error('❌ Mock删除用户失败:', error);
+      return [400, { error: (error as Error).message }];
+    }
+  });
+
+  // 添加请求/响应拦截器用于调试
+  axiosInstance.interceptors.request.use(
+    (config) => {
+      console.log('🚀 Axios Request:', { url: config.url, method: config.method, params: config.params });
+      return config;
+    },
+    (error) => {
+      console.error('❌ Axios Request Error:', error);
+      return Promise.reject(error);
+    }
+  );
+
+  axiosInstance.interceptors.response.use(
+    (response) => {
+      console.log('✅ Axios Response:', { url: response.config.url, status: response.status, data: response.data });
+      return response;
+    },
+    (error) => {
+      console.error('❌ Axios Response Error:', error);
+      return Promise.reject(error);
+    }
+  );
+
+  const httpClient = new AxiosHttpClient(axiosInstance);
 
   // 等待组件注册完成
   if (!componentsRegistered) {
@@ -77,8 +187,9 @@ function App() {
           engineConfig={{
             debug: true,
             dataLoader: {
-              timeout: 10000,
-              enableCache: true
+              timeout: 15000,
+              enableCache: true,
+              httpClient // 🚀 使用 Axios HTTP 客户端
             }
           }}
           onPageLoad={(schema) => {

@@ -375,7 +375,7 @@ export class ActionExecutor {
     const response = await fetch(url, {
       method,
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json; charset=utf-8',
         ...headers
       },
       body: method !== 'GET' ? JSON.stringify(body) : undefined
