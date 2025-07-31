@@ -10,10 +10,9 @@ import {
   Space,
   Typography,
   Select,
-  Form,
-  Pagination,
-  message
+  Form
 } from 'antd';
+import { SearchContainer } from './components/search-container';
 
 const { Option } = Select;
 
@@ -41,8 +40,9 @@ const EnhancedSelect = ({ value, onChange, options = [], dataBinding, ...props }
     options.map((option: any) => 
       React.createElement(Option, { 
         key: option.value, 
-        value: option.value 
-      }, option.label)
+        value: option.value,
+        children: option.label
+      })
     )
   );
 };
@@ -149,8 +149,9 @@ const FilterForm = ({ filters = [], onFilter, onReset, dataBinding, ...props }: 
               filter.options?.map((option: any) => 
                 React.createElement(Option, {
                   key: option.value,
-                  value: option.value
-                }, option.label)
+                  value: option.value,
+                  children: option.label
+                })
               )
             )
           );
@@ -175,7 +176,7 @@ const FilterForm = ({ filters = [], onFilter, onReset, dataBinding, ...props }: 
 /**
  * 工具栏组件 - 包含新增等操作按钮
  */
-const Toolbar = ({ actions = [], dataBinding, ...props }: any) => {
+const Toolbar = ({ actions = [], dataBinding }: any) => {
   return React.createElement(Card, {
     size: 'small',
     style: { marginBottom: 16 }
@@ -293,8 +294,16 @@ export function setupComponentRegistry() {
     },
     description: '通用容器组件'
   });
+
+  // 注册自定义业务组件
+  defaultComponentRegistry.register({
+    type: '@crud-table-demo/SearchContainer',
+    component: SearchContainer,
+    description: '搜索容器组件'
+  });
   
   const registeredTypes = defaultComponentRegistry.getRegisteredTypes();
   console.log('✅ 组件注册完成，已注册组件:', registeredTypes);
   console.log('✅ Container组件是否已注册:', registeredTypes.includes('Container'));
+  console.log('✅ SearchContainer组件是否已注册:', registeredTypes.includes('@crud-table-demo/SearchContainer'));
 }

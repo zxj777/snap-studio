@@ -210,6 +210,7 @@ export class ActionExecutor {
   ): Promise<{ result?: any; subResults?: ActionExecutionResult[] }> {
     switch (action.type) {
       case 'UPDATE_STATE':
+        // debugger
         return { result: await this.executeUpdateState(action.config as UpdateStateConfig, context) };
         
       case 'FETCH_DATA':
@@ -518,6 +519,9 @@ export class ActionExecutor {
    * 计算表达式
    */
   private async evaluateExpression(expression: string, context: ActionExecutionContext): Promise<any> {
+    // 去掉 {{}} 包装，提取纯表达式
+    const cleanExpression = expression.replace(/^\{\{|\}\}$/g, '');
+    
     const evaluationContext = {
       state: this.stateManager.get(),
       event: context.event,
@@ -525,7 +529,8 @@ export class ActionExecutor {
       target: context.target
     };
     
-    return await this.expressionEngine.evaluate(expression, evaluationContext);
+    // ExpressionEngine.evaluate() 直接返回求值结果，失败时返回 undefined
+    return await this.expressionEngine.evaluate(cleanExpression, evaluationContext);
   }
   
   /**

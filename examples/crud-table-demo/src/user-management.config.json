@@ -22,7 +22,7 @@
     "structure": {
       "comp_page_container": {
         "children": [
-          "comp_search_form",
+          "comp_search_container",
           "comp_user_table"
         ]
       }
@@ -38,62 +38,28 @@
         }
       }
     },
-    "comp_search_form": {
-      "componentType": "Form",
+    "comp_search_container": {
+      "componentType": "@crud-table-demo/SearchContainer",
       "properties": {
-        "layout": "inline",
         "style": {
           "marginBottom": "16px",
           "padding": "16px",
           "background": "#fafafa",
-          "borderRadius": "6px"
+          "borderRadius": "6px",
+          "display": "flex",
+          "alignItems": "center",
+          "gap": "12px"
         },
-        "fields": [
-          {
-            "name": "name",
-            "label": "用户名/邮箱1",
-            "type": "input",
-            "placeholder": "请输入用户名或邮箱",
-            "style": { "width": "200px" }
-          },
-          {
-            "name": "department",
-            "label": "部门",
-            "type": "select",
-            "placeholder": "请选择部门",
-            "style": { "width": "150px" },
-            "options": [
-              { "label": "技术部", "value": "tech" },
-              { "label": "产品部", "value": "product" },
-              { "label": "设计部", "value": "design" },
-              { "label": "运营部", "value": "operation" },
-              { "label": "市场部", "value": "marketing" },
-              { "label": "人事部", "value": "hr" }
-            ]
-          },
-          {
-            "name": "status",
-            "label": "状态",
-            "type": "select",
-            "placeholder": "请选择状态",
-            "style": { "width": "120px" },
-            "options": [
-              { "label": "在职", "value": "active" },
-              { "label": "离职", "value": "inactive" }
-            ]
-          }
-        ],
-        "actions": [
-          {
-            "text": "搜索",
-            "type": "primary",
-            "actionId": "act_search_users"
-          },
-          {
-            "text": "重置",
-            "actionId": "act_reset_search"
-          }
-        ]
+        "placeholder": "请输入用户名或邮箱进行搜索",
+        "searchButtonText": "开始搜索"
+      },
+      "dataBinding": {
+        "value": "searchKeyword",
+        "loading": "loading"
+      },
+      "events": {
+        "onSearch": "act_search_users",
+        "onChange": "act_update_search_keyword"
       }
     },
     "comp_user_table": {
@@ -407,21 +373,38 @@
         ]
       }
     },
+    "act_update_search_keyword": {
+      "type": "UPDATE_STATE",
+      "config": {
+        "path": "searchKeyword",
+        "value": "{{payload}}"
+      }
+    },
     "act_update_search_params": {
       "type": "UPDATE_STATE",
       "config": {
         "path": "searchParams",
-        "value": "{{payload}}"
+        "value": {
+          "name": "{{state.searchKeyword}}"
+        }
       }
     },
     "act_reset_search": {
       "type": "COMPOSITE",
       "config": {
         "steps": [
+          "act_clear_search_keyword",
           "act_clear_search_params",
           "act_reset_pagination",
           "act_fetch_users"
         ]
+      }
+    },
+    "act_clear_search_keyword": {
+      "type": "UPDATE_STATE",
+      "config": {
+        "path": "searchKeyword",
+        "value": ""
       }
     },
     "act_clear_search_params": {
@@ -455,7 +438,8 @@
       "total": 0
     },
     "searchParams": {},
-    "selectedRowKeys": []
+    "selectedRowKeys": [],
+    "searchKeyword": ""
   },
   "lifecycle": {
     "onLoad": ["act_load_users"]

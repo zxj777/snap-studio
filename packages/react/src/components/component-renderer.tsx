@@ -127,12 +127,17 @@ export function ComponentRenderer({
     const props: Record<string, any> = {};
     
     Object.entries(definition.events).forEach(([eventName, actionId]) => {
-      props[eventName] = async (event: Event) => {
+      props[eventName] = async (event: any) => {
         try {
+          // 从事件对象中提取 payload，如果没有则使用默认值
+          const payload = event?.payload !== undefined 
+            ? event.payload 
+            : { componentId, eventName };
+            
           await execute(actionId, {
             event,
-            target: event.target,
-            payload: { componentId, eventName }
+            target: event?.target || event,
+            payload
           });
         } catch (error) {
           console.error(`事件处理失败: ${eventName}`, error);
