@@ -287,12 +287,12 @@ export class ActionExecutor {
     config: FetchDataConfig, 
     context: ActionExecutionContext
   ): Promise<any> {
-    const { dataSourceId, updateStatePath } = config;
+    const { dataSourceId, resultPath } = config;
     
     const result = await this.dataLoader.loadSingle(dataSourceId);
     
-    if (result.success && updateStatePath) {
-      this.stateManager.set(updateStatePath, result.data);
+    if (result.success && resultPath) {
+      this.stateManager.set(resultPath, result.data);
     }
     
     return result;

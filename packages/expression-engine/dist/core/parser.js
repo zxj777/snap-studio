@@ -65,4 +65,3 @@ export class ExpressionParser {
     }
 }
 ExpressionParser.EXPRESSION_REGEX = /\{\{([^}]+)\}\}/g;
-//# sourceMappingURL=parser.js.map

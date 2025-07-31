@@ -252,4 +252,3 @@ export interface ActionRetryConfig {
     /** 最大延迟（毫秒） */
     maxDelay?: number;
 }
-//# sourceMappingURL=action.d.ts.map

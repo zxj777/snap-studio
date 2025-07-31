@@ -83,6 +83,15 @@ export function ComponentRenderer({
       }
     });
     
+    // Debug: 输出数据绑定信息
+    if (definition.componentType === 'Table') {
+      console.log('🔗 Table data binding:', {
+        dataBinding: definition.dataBinding,
+        boundData,
+        dataBindingProps: props
+      });
+    }
+    
     return props;
   }, [definition.dataBinding, dataBindingPaths, boundData]);
   
@@ -217,13 +226,71 @@ export function ComponentRenderer({
       React.createElement(ErrorComponent);
   }
   
+  // 处理特殊组件的属性预处理
+  const preprocessedProps = useMemo(() => {
+    const baseProps = {
+      ...(definition.properties || definition.props || {}),
+      ...dataBindingProps,
+      ...dynamicProps,
+      ...eventProps,
+      ...extraProps
+    };
+
+    // 特殊处理表格组件的列渲染函数
+    if (definition.componentType === 'Table' && baseProps.columns) {
+      baseProps.columns = baseProps.columns.map((col: any) => {
+        if (col.render && typeof col.render === 'string') {
+          // 将字符串表达式转换为渲染函数
+          const renderExpression = col.render;
+          return {
+            ...col,
+            render: (value: any, record: any, index: number) => {
+              try {
+                const context = {
+                  value,
+                  record,
+                  index,
+                  state: engine.stateManager.get(),
+                  // 为部门和职位渲染提供数据
+                  departments: [
+                    { label: "技术部", value: "tech" },
+                    { label: "产品部", value: "product" },
+                    { label: "设计部", value: "design" },
+                    { label: "运营部", value: "operation" },
+                    { label: "市场部", value: "marketing" },
+                    { label: "人事部", value: "hr" }
+                  ],
+                  positions: [
+                    { label: "前端工程师", value: "frontend" },
+                    { label: "后端工程师", value: "backend" },
+                    { label: "全栈工程师", value: "fullstack" },
+                    { label: "产品经理", value: "pm" },
+                    { label: "UI设计师", value: "ui" },
+                    { label: "UX设计师", value: "ux" },
+                    { label: "运营专员", value: "operation" },
+                    { label: "市场专员", value: "marketing" },
+                    { label: "HR专员", value: "hr" }
+                  ]
+                };
+                
+                return engine.stateManager.expressionEngine?.evaluateSync(renderExpression, context) || value;
+              } catch (error) {
+                console.warn(`列渲染表达式执行失败: ${renderExpression}`, error);
+                return value;
+              }
+            }
+          };
+        }
+        return col;
+      });
+    }
+
+    return baseProps;
+  }, [definition, dataBindingProps, dynamicProps, eventProps, extraProps, engine]);
+
   // 合并所有属性
   const allProps = {
-    ...(definition.properties || definition.props || {}),
-    ...dataBindingProps,
-    ...dynamicProps,
-    ...eventProps,
-    ...extraProps,
+    ...preprocessedProps,
     children: renderChildren()
   };
   

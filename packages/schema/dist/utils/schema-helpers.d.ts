@@ -92,4 +92,3 @@ export declare function getSchemaStats(schema: PageSchema): {
     dataSourceTypes: Record<string, number>;
     actionTypes: Record<string, number>;
 };
-//# sourceMappingURL=schema-helpers.d.ts.map

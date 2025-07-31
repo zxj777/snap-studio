@@ -142,4 +142,3 @@ export interface ErrorBoundaryConfig {
     /** 是否报告错误 */
     reportError?: boolean;
 }
-//# sourceMappingURL=component.d.ts.map

@@ -195,4 +195,3 @@ export interface RetryConfig {
     /** 最大延迟（毫秒） */
     maxDelay?: number;
 }
-//# sourceMappingURL=data-source.d.ts.map

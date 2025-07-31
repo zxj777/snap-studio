@@ -43,4 +43,3 @@ export interface TimeoutConfig {
     /** 重试间隔（毫秒） */
     retryDelay?: number;
 }
-//# sourceMappingURL=load-strategy.d.ts.map

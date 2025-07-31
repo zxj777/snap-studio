@@ -108,4 +108,3 @@ export class ExpressionEngine {
  * 默认引擎实例（便于快速使用）
  */
 export const defaultEngine = new ExpressionEngine();
-//# sourceMappingURL=index.js.map

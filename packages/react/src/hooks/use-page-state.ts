@@ -166,6 +166,7 @@ export function usePageStates<T extends Record<string, any>>(
     
     return initialStates;
   });
+
   
   const [isLoading, setIsLoading] = useState(!stateManager);
   
@@ -175,18 +176,35 @@ export function usePageStates<T extends Record<string, any>>(
       setIsLoading(true);
       return;
     }
+
     
     setIsLoading(false);
+    
+    // 立即获取当前状态
+    const currentStates = {} as T;
+    paths.forEach(path => {
+      const value = stateManager.get(path as string);
+      currentStates[path] = value !== undefined ? value : defaultValues?.[path];
+    });
+    console.log('🔄 usePageStates initial states:', currentStates);
+    setInternalStates(currentStates);
     
     const subscriptionIds: string[] = [];
     
     paths.forEach(path => {
-      const subscriptionId = stateManager.subscribe(path as string, () => {
+      const subscriptionId = stateManager.subscribe(path as string, (newState, oldState, changedPath) => {
+        console.log('🔔 State change notification:', {
+          path: path as string,
+          changedPath,
+          newValue: stateManager.get(path as string)
+        });
+        
         const newStates = {} as T;
         paths.forEach(p => {
           const value = stateManager.get(p as string);
           newStates[p] = value !== undefined ? value : defaultValues?.[p];
         });
+        console.log('🔄 usePageStates updated states:', newStates);
         setInternalStates(newStates);
       });
       

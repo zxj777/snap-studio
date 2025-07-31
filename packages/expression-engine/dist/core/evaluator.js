@@ -111,4 +111,3 @@ export class ExpressionEvaluator {
         this.jexlInstance.addBinaryOp(operator, precedence, fn);
     }
 }
-//# sourceMappingURL=evaluator.js.map

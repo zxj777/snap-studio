@@ -56,4 +56,3 @@ export interface Metadata {
     /** 标签 */
     tags?: string[];
 }
-//# sourceMappingURL=page-schema.d.ts.map

@@ -332,4 +332,3 @@ export interface ErrorDefinition {
     /** 是否需要上报 */
     reportable?: boolean;
 }
-//# sourceMappingURL=advanced.d.ts.map

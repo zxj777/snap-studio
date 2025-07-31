@@ -10,7 +10,7 @@
     }
   },
   "loadStrategy": {
-    "initial": ["act_fetch_users"],
+    "initial": [],
     "preload": [],
     "onDemand": {
       "act_create_user": ["ds_departments", "ds_positions"],
@@ -104,8 +104,7 @@
         "size": "middle",
         "editable": true,
         "editMode": "inline",
-        "dataSource": "{{state.userList}}",
-        "loading": "{{state.loading}}",
+
         "columns": [
           {
             "title": "用户ID1",
@@ -258,9 +257,9 @@
         }
       },
       "dataBinding": {
-        "dataSource": "state.userList",
-        "loading": "state.loading",
-        "pagination": "state.pagination"
+        "dataSource": "userList",
+        "loading": "loading",
+        "pagination": "pagination"
       }
     }
   },

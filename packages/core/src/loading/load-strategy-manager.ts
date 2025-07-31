@@ -484,6 +484,7 @@ export class LoadStrategyManager {
     try {
       if (task.type === 'dataSource') {
         const dataResult = await this.dataLoader.loadSingle(task.targetId);
+
         
         return {
           taskId: task.id,

@@ -24,4 +24,3 @@ export declare class ExpressionParser {
      */
     static extractPureExpression(input: string): string | null;
 }
-//# sourceMappingURL=parser.d.ts.map

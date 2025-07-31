@@ -198,6 +198,7 @@ export class DataLoader {
     dataSource: DataSourceDefinition
   ): Promise<DataLoadResult> {
     const startTime = Date.now();
+
     
     try {
       let data: any;
@@ -220,7 +221,7 @@ export class DataLoader {
           break;
           
         case 'MOCK':
-          data = dataSource.config.value || this.generateMockData(dataSource.config);
+          data = dataSource.config.data || this.generateMockData(dataSource.config);
           break;
           
         default:

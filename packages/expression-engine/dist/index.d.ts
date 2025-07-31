@@ -50,4 +50,3 @@ export declare class ExpressionEngine {
  * 默认引擎实例（便于快速使用）
  */
 export declare const defaultEngine: ExpressionEngine;
-//# sourceMappingURL=index.d.ts.map

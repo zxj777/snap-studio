@@ -73,6 +73,7 @@ export class StateManager {
    * 设置状态值
    */
   set(path: string, value: any, options?: StateUpdate['options']): void {
+    console.log('📝 StateManager.set:', { path, value, hasSubscribers: this.subscriptions.size });
     this.updateState({
       type: 'SET',
       path,
@@ -266,10 +267,23 @@ export class StateManager {
    * 通知订阅者
    */
   private notifySubscribers(newState: any, oldState: any, changedPath: string): void {
+    console.log('📢 StateManager.notifySubscribers:', { 
+      changedPath, 
+      subscriberCount: this.subscriptions.size,
+      subscribers: Array.from(this.subscriptions.values()).map(s => s.pathPattern)
+    });
+    
     const subscriptionsToRemove: string[] = [];
     
     this.subscriptions.forEach((subscription) => {
-      if (this.pathMatches(changedPath, subscription.pathPattern)) {
+      const matches = this.pathMatches(changedPath, subscription.pathPattern);
+      console.log('🔍 Path match check:', {
+        changedPath,
+        pattern: subscription.pathPattern,
+        matches
+      });
+      
+      if (matches) {
         try {
           subscription.callback(newState, oldState, changedPath);
           

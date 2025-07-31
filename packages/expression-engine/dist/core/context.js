@@ -71,4 +71,3 @@ export class ContextManager {
             typeof context.state === 'object';
     }
 }
-//# sourceMappingURL=context.js.map

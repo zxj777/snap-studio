@@ -24,4 +24,3 @@ export declare class ContextManager {
      */
     static validateContext(context: any): context is ExpressionContext;
 }
-//# sourceMappingURL=context.d.ts.map

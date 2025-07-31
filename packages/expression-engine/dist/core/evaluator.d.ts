@@ -31,4 +31,3 @@ export declare class ExpressionEvaluator {
      */
     addBinaryOp(operator: string, precedence: number, fn: Function): void;
 }
-//# sourceMappingURL=evaluator.d.ts.map

@@ -35,24 +35,11 @@ export const EnhancedPageContainer: React.FC<EnhancedPageContainerProps> = ({
     initError
   } = useRenderEngine(engineConfig);
 
-  const [actionHandlersSetup, setActionHandlersSetup] = useState(false);
-
-  // 注意：暂时移除自定义action处理器，因为我们现在使用内置的FETCH_DATA、MOCK等类型
-  // useEffect(() => {
-  //   console.log('🔧 Action handlers setup check:', { engine: !!engine, actionHandlersSetup });
-  //   if (engine && !actionHandlersSetup) {
-  //     console.log('🔧 Setting up action handlers...');
-  //     setupActionHandlers(engine.actionExecutor);
-  //     setActionHandlersSetup(true);
-  //     console.log('✅ Action handlers setup complete');
-  //   }
-  // }, [engine, actionHandlersSetup]);
 
   // 页面初始化
   useEffect(() => {
     console.log('🚀 Page initialization check:', { 
       engine: !!engine, 
-      // actionHandlersSetup, 
       isInitialized, 
       isInitializing 
     });
@@ -72,7 +59,7 @@ export const EnhancedPageContainer: React.FC<EnhancedPageContainerProps> = ({
         onPageError?.(error.message || '页面初始化异常');
       });
     }
-  }, [engine, actionHandlersSetup, schema, initializePage, onPageLoad, onPageError]);
+  }, [engine, schema, initializePage, onPageLoad, onPageError]);
 
   // 显示错误
   if (initError) {
@@ -94,7 +81,6 @@ export const EnhancedPageContainer: React.FC<EnhancedPageContainerProps> = ({
       isInitializing, 
       isInitialized, 
       hasEngine: !!engine,
-      actionHandlersSetup 
     });
     return (
       <div style={{ 
@@ -106,7 +92,6 @@ export const EnhancedPageContainer: React.FC<EnhancedPageContainerProps> = ({
           Engine: {engine ? '✅' : '❌'} | 
           Initialized: {isInitialized ? '✅' : '❌'} | 
           Initializing: {isInitializing ? '⏳' : '⭕'} |
-          Actions: {actionHandlersSetup ? '✅' : '❌'}
         </div>
       </div>
     );
@@ -133,6 +118,8 @@ export const EnhancedPageContainer: React.FC<EnhancedPageContainerProps> = ({
       </div>
     );
   }
+
+  console.log(engine, 'engineengine')
 
   return (
     <ComponentRenderer

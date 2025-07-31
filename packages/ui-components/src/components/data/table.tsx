@@ -171,6 +171,7 @@ export const BaseTable: React.FC<TableProps> = ({
 
   // 同步外部数据 - 使用 JSON.stringify 进行深度比较，避免无限渲染
   useEffect(() => {
+    console.log('🔄 Table dataSource updated:', dataSource);
     setTableData(dataSource);
   }, [JSON.stringify(dataSource)]);
 

@@ -32,4 +32,3 @@ export interface ExpressionEngineConfig {
     /** 表达式超时时间（毫秒） */
     timeout?: number;
 }
-//# sourceMappingURL=expression.d.ts.map
