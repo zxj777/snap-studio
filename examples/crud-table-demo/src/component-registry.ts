@@ -13,6 +13,8 @@ import {
   Form
 } from 'antd';
 import { SearchContainer } from './components/search-container';
+import FilterContainer from './components/filter';
+import PatientList from './components/patients';
 
 const { Option } = Select;
 
@@ -300,6 +302,18 @@ export function setupComponentRegistry() {
     type: '@crud-table-demo/SearchContainer',
     component: SearchContainer,
     description: '搜索容器组件'
+  });
+
+  defaultComponentRegistry.register({
+    type: '@crud-table-demo/FilterContainer',
+    component: FilterContainer,
+    description: '高级筛选容器组件'
+  });
+
+  defaultComponentRegistry.register({
+    type: '@crud-table-demo/PatientList',
+    component: PatientList,
+    description: '患者列表组件'
   });
   
   const registeredTypes = defaultComponentRegistry.getRegisteredTypes();

@@ -1,0 +1,244 @@
+{
+  "metadata": {
+    "pageId": "user_filter_page",
+    "name": "用户筛选",
+    "version": "1.0.0",
+    "description": "用户筛选组件 - 支持多种筛选条件",
+    "seo": {
+      "title": "用户筛选",
+      "description": "基于 Snap Studio 低代码平台构建的用户筛选组件"
+    }
+  },
+  "loadStrategy": {
+    "initial": [],
+    "preload": [],
+    "onDemand": {}
+  },
+  "layout": {
+    "root": "comp_page_container",
+    "structure": {
+      "comp_page_container": {
+      "children": ["comp_filter_container", "comp_patient_list"]
+    }
+    }
+  },
+  "components": {
+    "comp_page_container": {
+      "componentType": "Container",
+      "properties": {
+        "style": {
+          "padding": "24px",
+          "minHeight": "100vh"
+        }
+      }
+    },
+    "comp_filter_container": {
+      "componentType": "@crud-table-demo/FilterContainer",
+      "properties": {
+        "style": {
+          "marginTop": "16px",
+          "marginBottom": "16px"
+        },
+        "filters": [
+          {
+            "key": "patientName",
+            "label": "患者姓名",
+            "type": "input",
+            "placeholder": "请输入患者姓名进行搜索",
+            "span": 6
+          },
+          {
+            "key": "sex",
+            "label": "性别",
+            "type": "select",
+            "placeholder": "请选择性别",
+            "options": [
+              { "label": "男", "value": "男" },
+              { "label": "女", "value": "女" }
+            ],
+            "span": 6
+          },
+          {
+            "key": "birthDate",
+            "label": "出生日期",
+            "type": "dateRange",
+            "placeholder": "选择出生日期范围",
+            "span": 6
+          },
+          {
+            "key": "joinDate",
+            "label": "入组日期",
+            "type": "dateRange",
+            "placeholder": "选择入组日期范围",
+            "span": 6
+          },
+          {
+            "key": "status",
+            "label": "状态",
+            "type": "select",
+            "placeholder": "请选择状态",
+            "options": [
+              { "label": "正常", "value": 0 },
+              { "label": "停用", "value": 1 }
+            ],
+            "defaultValue": 0,
+            "span": 6
+          }
+        ],
+        "itemsPerRow": 4,
+        "defaultExpanded": false
+      },
+      "dataBinding": {
+        "values": "searchParams"
+      },
+      "events": {
+        "onFilter": "act_fetch_patient_info",
+        "onReset": "act_reset_filter",
+        "onChange": "act_update_filter_value"
+      }
+    },
+    "comp_patient_list": {
+      "componentType": "@crud-table-demo/PatientList",
+      "properties": {
+        "title": "患者信息列表",
+        "showActions": false,
+        "bordered": true,
+        "size": "middle",
+        "columns": [
+          {
+            "title": "患者姓名",
+            "dataIndex": "patientName",
+            "key": "patientName",
+            "width": 120,
+            "fixed": "left",
+            "renderType": "text",
+            "visible": true
+          },
+          {
+            "title": "性别",
+            "dataIndex": "sex",
+            "key": "sex",
+            "width": 80,
+            "align": "center",
+            "renderType": "tag",
+            "visible": true
+          },
+          {
+            "title": "出生日期",
+            "dataIndex": "birthDate",
+            "key": "birthDate",
+            "width": 120,
+            "renderType": "date",
+            "visible": true
+          },
+          {
+            "title": "入组日期",
+            "dataIndex": "joinDate",
+            "key": "joinDate",
+            "width": 180,
+            "renderType": "date",
+            "visible": true
+          },
+          {
+            "title": "状态",
+            "dataIndex": "status",
+            "key": "status",
+            "width": 80,
+            "align": "center",
+            "renderType": "status",
+            "visible": true
+          }
+        ]
+      },
+      "dataBinding": {
+        "dataSource": "patientInfo",
+        "loading": "loading"
+      },
+      "events": {
+        "onView": "act_view_patient",
+        "onEdit": "act_edit_patient",
+        "onDelete": "act_delete_patient"
+      }
+    }
+  },
+  "dataSource": {
+    "ds_patient_info": {
+      "type": "API_REQUEST",
+      "config": {
+        "url": "/api/patient/patientInfo/preview",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "{{state.searchParams}}"
+      },
+      "transformer": "data.data.data"
+    }
+  },
+  "actions": {
+    "act_update_filter_value": {
+      "type": "UPDATE_STATE",
+      "config": {
+        "path": "searchParams.{{payload.key}}",
+        "value": "{{payload.value}}"
+      }
+    },
+    "act_reset_filter": {
+      "type": "UPDATE_STATE",
+      "config": {
+        "path": "searchParams",
+        "value": {
+          "status": 0
+        }
+      }
+    },
+    "act_fetch_patient_info": {
+      "type": "COMPOSITE",
+      "config": {
+        "steps": [
+          "act_fetch_patient_data"
+        ]
+      }
+    },
+    "act_fetch_patient_data": {
+      "type": "FETCH_DATA",
+      "config": {
+        "dataSourceId": "ds_patient_info",
+        "resultPath": "patientInfo",
+        "showLoading": true,
+        "loadingPath": "loading"
+      }
+    },
+    "act_view_patient": {
+      "type": "SHOW_MESSAGE",
+      "config": {
+        "message": "查看患者详情：{{JSON.stringify(payload, null, 2)}}",
+        "type": "info"
+      }
+    },
+    "act_edit_patient": {
+      "type": "SHOW_MESSAGE",
+      "config": {
+        "message": "编辑患者信息：{{JSON.stringify(payload, null, 2)}}",
+        "type": "info"
+      }
+    },
+    "act_delete_patient": {
+      "type": "SHOW_MESSAGE",
+      "config": {
+        "message": "删除患者：{{JSON.stringify(payload, null, 2)}}",
+        "type": "warning"
+      }
+    }
+  },
+  "initialState": {
+    "searchParams": {
+      "status": 0
+    },
+    "loading": false,
+    "patientInfo": []
+  },
+  "lifecycle": {
+    "onLoad": []
+  }
+}

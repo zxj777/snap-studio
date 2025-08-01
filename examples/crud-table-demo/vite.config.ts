@@ -15,6 +15,13 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-    open: true
+    open: true,
+    proxy: {
+      '/api/patient': {
+        target: 'http://192.168.2.102:6320',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/patient/, '')
+      }
+    }
   }
 });
